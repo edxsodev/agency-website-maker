@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agency Website Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FDF8F2;
+    --bg-warm: #FBEEE0;
+    --card: #FFFFFF;
+    --ink: #3A2E22;
+    --ink-soft: #8C7A68;
+    --amber: #E8963A;
+    --amber-soft: #FCEBD4;
+    --teal: #1F6E5C;
+    --teal-soft: #DEF0EA;
+    --coral: #E8623A;
+    --coral-soft: #FBE3D8;
+    --line: #F0E2D0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    padding: 22px 36px; display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(135deg, var(--bg-warm), var(--bg));
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 {
+    font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 700;
+    margin: 0; letter-spacing: -0.02em; color: var(--ink);
+  }
+  header h1 span { color: var(--coral); }
+  header .meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft);
+    background: var(--card); border: 1px solid var(--line); padding: 5px 12px; border-radius: 20px;
+  }
+
+  .layout { display: grid; grid-template-columns: 270px 1fr; min-height: calc(100vh - 74px); }
+
+  nav { padding: 24px 16px; }
+  nav .nav-label {
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--ink-soft); text-transform: uppercase; padding: 0 10px 12px;
+  }
+  .agency-item {
+    padding: 13px 14px; border-radius: 14px; cursor: pointer; margin-bottom: 4px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .agency-item:hover { background: var(--card); }
+  .agency-item.active { background: var(--card); box-shadow: 0 2px 10px rgba(58,46,34,0.06); }
+  .agency-item .name {
+    font-family: 'Bricolage Grotesque', sans-serif; font-size: 14.5px; font-weight: 600;
+  }
+  .agency-item .domain { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+
+  main { padding: 36px 44px; max-width: 780px; }
+
+  .agency-hero {
+    background: var(--card); border-radius: 20px; padding: 26px 30px; margin-bottom: 28px;
+    box-shadow: 0 2px 14px rgba(58,46,34,0.06);
+  }
+  .agency-hero h2 {
+    font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 700;
+    margin: 0 0 8px; letter-spacing: -0.02em;
+  }
+  .agency-hero .sub { font-size: 13.5px; color: var(--ink-soft); }
+  .agency-hero .sub a { color: var(--coral); text-decoration: none; font-weight: 500; }
+
+  .stage {
+    background: var(--card); border-radius: 18px; padding: 22px 26px; margin-bottom: 16px;
+    box-shadow: 0 1px 8px rgba(58,46,34,0.05);
+  }
+  .stage-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 4px; }
+  .stage-title { display: flex; align-items: center; gap: 10px; }
+  .stage-num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--bg-warm); color: var(--coral);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; flex-shrink: 0;
+  }
+  .stage-title h3 {
+    font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 600; margin: 0;
+  }
+
+  .chip {
+    font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px;
+    background: var(--bg-warm); color: var(--ink-soft); white-space: nowrap; flex-shrink: 0;
+  }
+  .chip.active { background: var(--amber-soft); color: var(--amber); }
+  .chip.done { background: var(--teal-soft); color: var(--teal); }
+  .chip.billed { background: var(--coral-soft); color: var(--coral); }
+  .chip.pending-pay { background: var(--coral-soft); color: var(--coral); opacity: 0.6; }
+
+  .stage-desc { font-size: 13px; color: var(--ink-soft); margin: 4px 0 16px; line-height: 1.55; max-width: 480px; }
+
+  button {
+    background: var(--ink); color: var(--bg); border: none;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px;
+    padding: 10px 18px; border-radius: 10px; cursor: pointer; margin-right: 8px; margin-bottom: 8px;
+    transition: transform 0.1s, opacity 0.15s;
+  }
+  button:hover { opacity: 0.85; }
+  button:active { transform: scale(0.97); }
+  button:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+  button.secondary { background: var(--bg-warm); color: var(--ink); }
+  button.secondary:hover { background: var(--amber-soft); opacity: 1; }
+  button.accent { background: var(--coral); color: white; }
+
+  input[type=text] {
+    padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px;
+    font-size: 12.5px; margin-bottom: 8px; margin-right: 8px; font-family: 'Inter', sans-serif;
+    max-width: 220px;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--amber); }
+
+  .loading, .empty-state {
+    font-size: 12.5px; color: var(--ink-soft); padding: 4px 0;
+  }
+  .error {
+    color: var(--coral); background: var(--coral-soft); font-size: 12.5px;
+    padding: 10px 14px; border-radius: 10px; margin-top: 8px;
+  }
+
+  .persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .persona-card { background: var(--bg-warm); border-radius: 12px; padding: 12px 14px; }
+  .persona-card.conf-low { box-shadow: inset 3px 0 0 var(--amber); }
+  .persona-card.conf-medium { box-shadow: inset 3px 0 0 var(--ink-soft); }
+  .persona-card.conf-high { box-shadow: inset 3px 0 0 var(--teal); }
+  .persona-card .k {
+    font-size: 10.5px; font-weight: 600; color: var(--ink-soft); text-transform: uppercase;
+    letter-spacing: 0.04em; margin-bottom: 4px;
+  }
+  .persona-card .v { font-size: 12.5px; line-height: 1.5; }
+
+  .site-links { display: flex; gap: 10px; margin-top: 10px; }
+  .site-links a {
+    font-size: 12.5px; font-weight: 600; color: white; background: var(--coral);
+    padding: 9px 16px; border-radius: 10px; text-decoration: none;
+  }
+
+  .topic-item {
+    padding: 10px 14px; background: var(--bg-warm); border-radius: 10px; margin-bottom: 7px;
+    font-size: 12.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  }
+  .topic-item:hover { background: var(--amber-soft); }
+  .topic-item .score { font-size: 10.5px; color: var(--ink-soft); }
+
+  .post-preview {
+    margin-top: 10px; background: var(--bg-warm); border-radius: 14px; padding: 18px;
+    font-size: 13px; max-height: 300px; overflow-y: auto; line-height: 1.65;
+  }
+  .post-preview strong { font-family: 'Bricolage Grotesque', sans-serif; }
+
+  textarea {
+    width: 100%; height: 190px; margin-top: 10px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; padding: 12px; border: 1.5px solid var(--line); border-radius: 12px;
+    background: var(--bg-warm); resize: vertical;
+  }
+
+  .lead-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 12px;
+  }
+  .lead-row.header-row {
+    font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--ink-soft);
+  }
+
+  .empty-select {
+    font-family: 'Bricolage Grotesque', sans-serif; color: var(--ink-soft); font-size: 18px;
+    text-align: center; margin-top: 120px; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Agency <span>Website Maker</span></h1>
+  <span class="meta" id="baseUrlLabel"></span>
+</header>
+
+<div class="layout">
+  <nav id="agencyNav">
+    <div class="nav-label">Agencies</div>
+    <div class="loading" style="padding: 0 10px;">loading...</div>
+  </nav>
+
+  <main id="mainContent">
+    <div class="empty-select">Pick an agency to get started &rarr;</div>
+  </main>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8000";
+document.getElementById("baseUrlLabel").textContent = API_BASE;
+
+let agencies = [];
+let selectedAgency = null;
+
+async function api(method, path, body) {
+  const opts = { method, headers: { "Content-Type": "application/json" } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API_BASE + path, opts);
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    const detail = data && data.detail ? data.detail : res.statusText;
+    throw new Error(detail);
+  }
+  return data;
+}
+
+function domainOf(url) {
+  if (!url) return "no website";
+  try { return new URL(url).hostname.replace("www.", ""); } catch (e) { return url; }
+}
+
+async function loadAgencies() {
+  try {
+    const result = await api("POST", "/discovery", { location: "", max_results: 50 });
+    agencies = result.agencies || [];
+    renderNav();
+  } catch (e) {
+    document.getElementById("agencyNav").innerHTML =
+      `<div class="error" style="margin: 0 10px;">Couldn't connect: ${e.message}<br><br>Is the backend running at ${API_BASE}?</div>`;
+  }
+}
+
+function renderNav() {
+  const nav = document.getElementById("agencyNav");
+  const items = agencies.map(a => `
+    <div class="agency-item ${selectedAgency && selectedAgency.id === a.id ? 'active' : ''}" onclick="selectAgency('${a.id}')">
+      <div class="name">${a.name}</div>
+      <div class="domain">${domainOf(a.website)}</div>
+    </div>
+  `).join("");
+  nav.innerHTML = `<div class="nav-label">Agencies</div>${items}`;
+}
+
+function selectAgency(id) {
+  selectedAgency = agencies.find(a => a.id === id);
+  renderNav();
+  renderMain();
+}
+
+function setChip(id, status, labels) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = "chip" + (status ? " " + status : "");
+  el.textContent = labels[status] || labels.default;
+}
+
+async function renderMain() {
+  const main = document.getElementById("mainContent");
+  main.innerHTML = `
+    <div class="agency-hero">
+      <h2>${selectedAgency.name}</h2>
+      <div class="sub">${selectedAgency.address || "No address on file"} &middot; ${selectedAgency.phone || "No phone"} &middot;
+        <a href="${selectedAgency.website || '#'}" target="_blank">${domainOf(selectedAgency.website)}</a>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-top">
+        <div class="stage-title"><span class="stage-num">1</span><h3>Discovery</h3></div>
+        <span class="chip done">Found</span>
+      </div>
+      <p class="stage-desc">Agency identified from seeded location data.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stage-top">
+        <div class="stage-title"><span class="stage-num">2</span><h3>Brand Persona</h3></div>
+        <span class="chip" id="chip-persona">Not started</span>
+      </div>
+      <p class="stage-desc">A 17-section brand profile, built from their real site content.</p>
+      <button onclick="generatePersona()">Generate persona</button>
+      <div id="personaResult"></div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-top">
+        <div class="stage-title"><span class="stage-num">3</span><h3>Website</h3></div>
+        <span class="chip" id="chip-site">Not started</span>
+      </div>
+      <p class="stage-desc">Fast single-file HTML, or a fuller React app deployed live via Open Lovable.</p>
+      <button onclick="generateSite('html')" id="htmlSiteBtn" disabled>Generate HTML site</button>
+      <button onclick="generateSite('lovable')" id="lovableSiteBtn" disabled class="secondary">Generate React site</button>
+      <div id="siteResult"></div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-top">
+        <div class="stage-title"><span class="stage-num">4</span><h3>Blog &amp; Insights</h3></div>
+        <span class="chip pending-pay" id="chip-blog">Paid &middot; not billed</span>
+      </div>
+      <p class="stage-desc">BrandBoost topic suggestions and post generation, billed per post.</p>
+      <button onclick="suggestTopics()" id="topicsBtn" disabled>Suggest topics</button>
+      <div id="topicsResult"></div>
+      <div id="postResult"></div>
+      <div style="margin-top: 14px; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em;">Existing posts</div>
+      <div id="existingPosts"></div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-top">
+        <div class="stage-title"><span class="stage-num">5</span><h3>Leads</h3></div>
+        <span class="chip" id="chip-leads">None yet</span>
+      </div>
+      <p class="stage-desc">Submissions from the generated site's contact form.</p>
+      <button onclick="loadLeads()" class="secondary">Refresh</button>
+      <div id="leadsResult"></div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-top">
+        <div class="stage-title"><span class="stage-num">6</span><h3>Call Bot Prompt</h3></div>
+        <span class="chip" id="chip-callbot">Not started</span>
+      </div>
+      <p class="stage-desc">Voice-agent prompt from this agency's persona, ready to paste into the call bot app.</p>
+      <input type="text" id="botAgentName" placeholder="Agent name (default: Riley)">
+      <input type="text" id="botPhoneNumber" placeholder="Bot's phone number">
+      <br>
+      <button onclick="generateCallBotPrompt()" id="callBotBtn" disabled class="accent">Generate prompt</button>
+      <div id="callBotResult"></div>
+    </div>
+  `;
+  await checkExistingPersona();
+  await checkExistingSite();
+  await loadExistingPosts();
+  await loadLeads();
+  await checkExistingCallBot();
+}
+
+async function checkExistingPersona() {
+  try {
+    const persona = await api("GET", `/persona/${selectedAgency.id}`);
+    renderPersona(persona);
+  } catch (e) { /* none yet */ }
+}
+
+async function generatePersona() {
+  setChip("chip-persona", "active", { active: "Working...", default: "Not started" });
+  const resultDiv = document.getElementById("personaResult");
+  resultDiv.innerHTML = `<div class="loading">Scraping site and drafting persona (15-40s)...</div>`;
+  try {
+    const persona = await api("POST", "/persona/generate", { agency_id: selectedAgency.id, force_rescrape: false });
+    renderPersona(persona);
+  } catch (e) {
+    resultDiv.innerHTML = `<div class="error">${e.message}</div>`;
+    setChip("chip-persona", "", { default: "Failed" });
+  }
+}
+
+function renderPersona(persona) {
+  setChip("chip-persona", "done", { done: "Ready" });
+  document.getElementById("htmlSiteBtn").disabled = false;
+  document.getElementById("lovableSiteBtn").disabled = false;
+  document.getElementById("topicsBtn").disabled = false;
+  document.getElementById("callBotBtn").disabled = false;
+
+  const sections = persona.sections || {};
+  const keysToShow = ["identity_snapshot", "core_expertise_focus", "brand_voice_matrix", "audience_persona", "digital_presence"];
+  const cards = keysToShow.map(key => {
+    const section = sections[key];
+    if (!section) return "";
+    const conf = section.confidence || "medium";
+    return `
+      <div class="persona-card conf-${conf}">
+        <div class="k">${key.replace(/_/g, " ")}</div>
+        <div class="v">${section.content}</div>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("personaResult").innerHTML = `<div class="persona-grid">${cards}</div>`;
+}
+
+async function checkExistingSite() {
+  try {
+    const site = await api("GET", `/site-gen/${selectedAgency.id}`);
+    renderSiteResult(site);
+  } catch (e) { /* none yet */ }
+}
+
+async function generateSite(pipeline) {
+  setChip("chip-site", "active", { active: "Working...", default: "Not started" });
+  const resultDiv = document.getElementById("siteResult");
+  const isLovable = pipeline === "lovable";
+  resultDiv.innerHTML = `<div class="loading">${isLovable ? "Scraping, sandboxing, generating, deploying (1-2 min)..." : "Scraping and generating HTML (20-40s)..."}</div>`;
+  try {
+    const path = isLovable ? "/site-gen/generate-lovable" : "/site-gen/generate";
+    const site = await api("POST", path, { agency_id: selectedAgency.id, style_notes: "" });
+    renderSiteResult(site);
+  } catch (e) {
+    resultDiv.innerHTML = `<div class="error">${e.message}</div>`;
+    setChip("chip-site", "", { default: "Failed" });
+  }
+}
+
+function renderSiteResult(site) {
+  setChip("chip-site", "done", { done: "Live" });
+  const links = [];
+  if (site.framework === "single-file-html") {
+    links.push(`<a href="${API_BASE}/site-gen/${selectedAgency.id}/preview" target="_blank">Open HTML preview &rarr;</a>`);
+  } else if (site.preview_url) {
+    links.push(`<a href="${site.preview_url}" target="_blank">Open live deployment &rarr;</a>`);
+  }
+  document.getElementById("siteResult").innerHTML = `<div class="site-links">${links.join("")}</div>`;
+}
+
+async function suggestTopics() {
+  const resultDiv = document.getElementById("topicsResult");
+  resultDiv.innerHTML = `<div class="loading">Fetching topic suggestions...</div>`;
+  try {
+    const result = await api("POST", "/brandboost/suggest-topics", { agency_id: selectedAgency.id, count: 6 });
+    const topics = (result.data && result.data.topics) || [];
+    if (!topics.length) {
+      resultDiv.innerHTML = `<div class="empty-state">No topics returned.</div>`;
+      return;
+    }
+    resultDiv.innerHTML = topics.map(t => `
+      <div class="topic-item" onclick='generatePost(${JSON.stringify(t.label)}, ${JSON.stringify(t.postType || "blog")})'>
+        <span>${t.label}</span>
+        <span class="score">SEO ${t.seo ? t.seo.score : "--"} &middot; click to generate</span>
+      </div>
+    `).join("");
+  } catch (e) {
+    resultDiv.innerHTML = `<div class="error">${e.message}</div>`;
+  }
+}
+
+async function generatePost(topic, postType) {
+  setChip("chip-blog", "active", { active: "Billing...", default: "Paid \u00b7 not billed" });
+  const resultDiv = document.getElementById("postResult");
+  resultDiv.innerHTML = `<div class="loading">Generating post for "${topic}" -- paid call, please wait...</div>`;
+  try {
+    const post = await api("POST", "/brandboost/generate-post", {
+      agency_id: selectedAgency.id, topic, post_type: postType, length: "medium", include_cta: true
+    });
+    resultDiv.innerHTML = `
+      <div class="post-preview">
+        <strong>${post.topic}</strong> &middot; ${post.word_count} words
+        <div style="margin-top: 8px;">${post.content}</div>
+      </div>
+    `;
+    setChip("chip-blog", "billed", { billed: "Billed" });
+    await loadExistingPosts();
+  } catch (e) {
+    resultDiv.innerHTML = `<div class="error">${e.message}</div>`;
+    setChip("chip-blog", "pending-pay", { "pending-pay": "Paid \u00b7 not billed" });
+  }
+}
+
+async function loadExistingPosts() {
+  const div = document.getElementById("existingPosts");
+  if (!div) return;
+  try {
+    const posts = await api("GET", `/brandboost/posts/${selectedAgency.id}`);
+    if (!posts.length) {
+      div.innerHTML = `<div class="empty-state">None generated yet.</div>`;
+      return;
+    }
+    setChip("chip-blog", "billed", { billed: "Billed" });
+    div.innerHTML = posts.map(p => `
+      <div class="topic-item" style="cursor: default;">
+        <span>${p.topic || "(untitled)"}</span>
+        <span class="score">${p.word_count || "?"} words &middot; SEO ${p.seo_score ?? "--"}</span>
+      </div>
+    `).join("");
+  } catch (e) {
+    div.innerHTML = `<div class="error">${e.message}</div>`;
+  }
+}
+
+async function loadLeads() {
+  const div = document.getElementById("leadsResult");
+  if (!div) return;
+  div.innerHTML = `<div class="loading">Loading leads...</div>`;
+  try {
+    const leads = await api("GET", `/leads/${selectedAgency.id}`);
+    if (!leads.length) {
+      div.innerHTML = `<div class="empty-state">None captured yet.</div>`;
+      return;
+    }
+    setChip("chip-leads", "done", { done: leads.length + " captured" });
+    const rows = leads.map(l => `
+      <div class="lead-row">
+        <span>${l.name || "--"}</span>
+        <span>${l.email || "--"}</span>
+        <span>${l.phone || "--"}</span>
+        <span>${l.message || "--"}</span>
+      </div>
+    `).join("");
+    div.innerHTML = `
+      <div class="lead-row header-row"><span>Name</span><span>Email</span><span>Phone</span><span>Message</span></div>
+      ${rows}
+    `;
+  } catch (e) {
+    div.innerHTML = `<div class="error">${e.message}</div>`;
+  }
+}
+
+async function checkExistingCallBot() {
+  try {
+    const bot = await api("GET", `/call-bot/${selectedAgency.id}`);
+    renderCallBotResult(bot);
+  } catch (e) { /* none yet */ }
+}
+
+async function generateCallBotPrompt() {
+  setChip("chip-callbot", "active", { active: "Working...", default: "Not started" });
+  const resultDiv = document.getElementById("callBotResult");
+  resultDiv.innerHTML = `<div class="loading">Building prompt from persona...</div>`;
+  const agentName = document.getElementById("botAgentName").value.trim();
+  const botPhone = document.getElementById("botPhoneNumber").value.trim();
+  try {
+    const bot = await api("POST", "/call-bot/generate", {
+      agency_id: selectedAgency.id,
+      agent_name: agentName || undefined,
+      bot_phone_number: botPhone || undefined,
+    });
+    renderCallBotResult(bot);
+  } catch (e) {
+    resultDiv.innerHTML = `<div class="error">${e.message}</div>`;
+    setChip("chip-callbot", "", { default: "Failed" });
+  }
+}
+
+function renderCallBotResult(bot) {
+  setChip("chip-callbot", "done", { done: "Ready" });
+  const escaped = bot.prompt_text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  document.getElementById("callBotResult").innerHTML = `
+    <div style="margin-top: 10px;">
+      <button class="secondary" onclick="copyPrompt()">Copy prompt to clipboard</button>
+      <span style="font-size: 11px; color: var(--ink-soft); margin-left: 6px;">
+        agent: ${bot.agent_name}${bot.bot_phone_number ? " &middot; number: " + bot.bot_phone_number : ""}
+      </span>
+      <textarea id="promptTextarea" readonly>${escaped}</textarea>
+    </div>
+  `;
+}
+
+function copyPrompt() {
+  const textarea = document.getElementById("promptTextarea");
+  textarea.select();
+  document.execCommand("copy");
+}
+
+loadAgencies();
+</script>
+
+</body>
+</html>
