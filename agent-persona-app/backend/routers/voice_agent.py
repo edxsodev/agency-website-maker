@@ -28,6 +28,25 @@ def list_agencies_for_voice_agent():
     ]
 
 
+def _build_default_call_bot_prompt(agency_name: str, sections: dict, city: str = None) -> str:
+    snapshot = sections.get("identity_snapshot", {}).get("content", "")
+    expertise = sections.get("core_expertise_focus", {}).get("content", "")
+    voice = sections.get("brand_voice_matrix", {}).get("content", "")
+    return (
+        f"### {agency_name} — AI INBOUND CALL AGENT\n\n"
+        f"You are Riley, the professional AI receptionist for {agency_name}.\n"
+        f"Location / Service Area: {city or 'Texas'}.\n"
+        f"Identity: {snapshot}\n"
+        f"Core Focus: {expertise}\n"
+        f"Tone & Voice: {voice or 'Warm, helpful, professional real estate guide'}.\n\n"
+        "RULES:\n"
+        "- Max 1-2 conversational sentences per turn.\n"
+        "- Help callers with buying, selling, renting, or scheduling an agent callback.\n"
+        "- Politely ask for their name, target neighborhood, budget, and best phone number.\n"
+        "- Keep language natural, warm, and concise."
+    )
+
+
 @router.get("/{agency_number}", response_model=VoiceAgentPersonaResponse)
 def get_persona_by_number(agency_number: int):
     sb = get_supabase()
@@ -60,6 +79,8 @@ def get_persona_by_number(agency_number: int):
         .execute()
     )
     call_bot_prompt = call_bot_result.data[0]["prompt_text"] if call_bot_result.data else None
+    if not call_bot_prompt:
+        call_bot_prompt = _build_default_call_bot_prompt(agency["name"], persona.get("sections", {}), agency.get("city"))
 
     return {
         "agency_number": agency["agency_number"],
