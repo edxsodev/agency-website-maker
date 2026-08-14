@@ -16,11 +16,24 @@ router = APIRouter(prefix="/leads", tags=["leads"])
 @router.post("", response_model=Lead)
 def create_lead(lead: LeadCreate):
     sb = get_supabase()
-    agency = sb.table("agencies").select("id").eq("id", lead.agency_id).single().execute()
-    if not agency.data:
+    agency_id = lead.agency_id
+    try:
+        res = sb.table("agencies").select("id").eq("id", agency_id).single().execute()
+    except Exception:
+        res = None
+
+    if not res or not res.data:
+        try:
+            res = sb.table("agencies").select("id").eq("agency_number", int(agency_id)).single().execute()
+        except Exception:
+            res = None
+
+    if not res or not res.data:
         raise HTTPException(status_code=404, detail="Agency not found")
 
-    result = sb.table("leads").insert(lead.model_dump()).execute()
+    payload = lead.model_dump()
+    payload["agency_id"] = res.data["id"]
+    result = sb.table("leads").insert(payload).execute()
     return result.data[0]
 
 
